@@ -1,1 +1,29 @@
-Aguardando...
+*&---------------------------------------------------------------------*
+*& Report ZR_FSW_AGRUP_FAT_RMO
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zr_fsw_agrup_fat_rmo.
+
+INCLUDE zr_fsw_agrup_fat_top.
+INCLUDE zr_fsw_agrup_fat_scr.
+
+*******************************************************
+*----------- selecionar e processar dados -------------
+*******************************************************
+START-OF-SELECTION.
+
+  PERFORM zf_buscar_dados.
+
+END-OF-SELECTION.
+
+  IF gt_agrupfinal IS NOT INITIAL.
+    CALL SCREEN '0100'.
+  ELSE .
+    MESSAGE 'DADOS NÃO ENCONTRAD' TYPE 'S' DISPLAY LIKE 'E'.
+    RETURN.
+  ENDIF.
+
+  INCLUDE zr_fsw_agrup_fat_f01.
+  INCLUDE zr_fsw_agrup_fat_rmo_pbo01.
+  INCLUDE zr_fsw_agrup_fat_rmo_pai01.
