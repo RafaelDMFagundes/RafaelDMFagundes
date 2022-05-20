@@ -1,0 +1,21 @@
+*&---------------------------------------------------------------------*
+*& Include          ZR_FSW_AGRUP_FAT_SCR
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
+  SELECT-OPTIONS: s_kunnr  FOR gs_acdoca-kunnr OBLIGATORY NO INTERVALS NO-EXTENSION,
+                  s_rbukrs FOR gs_acdoca-rbukrs OBLIGATORY NO INTERVALS NO-EXTENSION.
+  SELECT-OPTIONS: s_blart  FOR gs_acdoca-blart OBLIGATORY,
+                  s_budat  FOR gs_acdoca-budat OBLIGATORY,
+                  s_anfbn  FOR gs_bsid-anfbn,
+                  s_netdt  FOR gs_acdoca-netdt.
+
+  SELECT-OPTIONS: s_xref2 FOR gs_bkpf-xref2_hd NO INTERVALS NO-EXTENSION.
+SELECTION-SCREEN END OF BLOCK b1.
+
+
+SELECTION-SCREEN BEGIN OF BLOCK b2 WITH FRAME TITLE TEXT-002.
+  SELECT-OPTIONS: s_ZTERM  FOR gs_bsid-zterm OBLIGATORY NO INTERVALS NO-EXTENSION,
+                  s_blarts FOR gs_acdoca-blart OBLIGATORY NO INTERVALS NO-EXTENSION,
+                  s_budats FOR gs_acdoca-budat OBLIGATORY NO INTERVALS NO-EXTENSION.
+SELECTION-SCREEN END OF BLOCK b2.
