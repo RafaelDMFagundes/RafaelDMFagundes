@@ -1,0 +1,90 @@
+*&---------------------------------------------------------------------*
+*& Include          ZR_FSW_AGRUP_FAT_TOP
+*&---------------------------------------------------------------------*
+
+*************** Criação do types para tempo de execução *************************
+TYPES:
+  BEGIN OF ty_acdoca,
+     TSL      TYPE acdoca-TSL      ,          RCLNT    TYPE acdoca-RCLNT,
+     WSL      TYPE acdoca-WSL      ,          RLDNR    TYPE acdoca-RLDNR ,
+     BUDAT    TYPE acdoca-BUDAT    ,          RBUKRS   TYPE acdoca-RBUKRS ,
+     BLDAT    TYPE acdoca-BLDAT    ,          GJAHR    TYPE acdoca-GJAHR   ,
+     BLART    TYPE acdoca-BLART    ,          BELNR    TYPE acdoca-BELNR    ,
+     BUZEI    TYPE acdoca-BUZEI    ,          DOCLN    TYPE acdoca-DOCLN    ,
+     ZUONR    TYPE acdoca-ZUONR    ,          RYEAR    TYPE acdoca-RYEAR    ,
+     BSCHL    TYPE acdoca-BSCHL    ,          DOCNR_LD TYPE acdoca-DOCNR_LD ,
+     BSTAT    TYPE acdoca-BSTAT    ,          RRCTY    TYPE acdoca-RRCTY    ,
+     USNAM    TYPE acdoca-USNAM    ,          RMVCT    TYPE acdoca-RMVCT    ,
+     KTOPL    TYPE acdoca-KTOPL    ,          VORGN    TYPE acdoca-VORGN    ,
+     LOKKT    TYPE acdoca-LOKKT    ,          VRGNG    TYPE acdoca-VRGNG    ,
+     KTOP2    TYPE acdoca-KTOP2    ,          BTTYPE   TYPE acdoca-BTTYPE   ,
+     REBZG    TYPE acdoca-REBZG    ,          CBTTYPE  TYPE acdoca-CBTTYPE  ,
+     EBELN    TYPE acdoca-EBELN    ,          AWTYP    TYPE acdoca-AWTYP    ,
+     EBELP    TYPE acdoca-EBELP    ,          AWITEM   TYPE acdoca-AWITEM   ,
+     ZEKKN    TYPE acdoca-ZEKKN    ,          AWITGRP  TYPE acdoca-AWITGRP  ,
+     SGTXT    TYPE acdoca-SGTXT    ,          SUBTA    TYPE acdoca-SUBTA    ,
+     KDAUF    TYPE acdoca-KDAUF    ,          RTCUR    TYPE acdoca-RTCUR    ,
+     KDPOS    TYPE acdoca-KDPOS    ,          RWCUR    TYPE acdoca-RWCUR    ,
+     MATNR    TYPE acdoca-MATNR    ,          RHCUR    TYPE acdoca-RHCUR    ,
+     WERKS    TYPE acdoca-WERKS    ,          RKCUR    TYPE acdoca-RKCUR    ,
+     LIFNR    TYPE acdoca-LIFNR    ,          RUNIT    TYPE acdoca-RUNIT    ,
+     KUNNR    TYPE acdoca-KUNNR    ,          RACCT    TYPE acdoca-RACCT    ,
+     KOART    TYPE acdoca-KOART    ,          RCNTR    TYPE acdoca-RCNTR    ,
+     UMSKZ    TYPE acdoca-UMSKZ    ,          PRCTR    TYPE acdoca-PRCTR    ,
+     MWSKZ    TYPE acdoca-MWSKZ    ,          RFAREA   TYPE acdoca-RFAREA   ,
+     HBKID    TYPE acdoca-HBKID    ,          RBUSA    TYPE acdoca-RBUSA    ,
+     HKTID    TYPE acdoca-HKTID    ,          KOKRS    TYPE acdoca-KOKRS    ,
+     VALUT    TYPE acdoca-VALUT    ,          SEGMENT  TYPE acdoca-SEGMENT  ,
+     XOPVW    TYPE acdoca-XOPVW    ,          SCNTR    TYPE acdoca-SCNTR    ,
+     AUGDT    TYPE acdoca-AUGDT    ,          PPRCTR   TYPE acdoca-PPRCTR   ,
+     AUGBL    TYPE acdoca-AUGBL    ,          SFAREA   TYPE acdoca-SFAREA   ,
+     NETDT    TYPE acdoca-netdt,              SBUSA    TYPE acdoca-SBUSA    ,
+     RASSC    TYPE acdoca-RASSC    ,
+     PSEGMENT TYPE acdoca-PSEGMENT ,
+  END OF ty_acdoca,
+
+  BEGIN OF ty_bsid,
+    bukrs TYPE bsid-bukrs,
+    kunnr TYPE bsid-kunnr,
+    belnr TYPE bsid-belnr,
+    anfbn TYPE bsid-anfbn,
+    zterm TYPE bsid-zterm,
+  END OF ty_bsid,
+
+  BEGIN OF ty_bkpf,
+    bukrs    TYPE bkpf-bukrs,
+    belnr    TYPE bkpf-belnr,
+    xref2_hd TYPE bkpf-xref2_hd,
+  END OF ty_bkpf.
+
+********** Declarações das estruturas do types por tempo de execução **********
+DATA: gt_acdoca TYPE TABLE OF ty_acdoca,
+      gt_bsid   TYPE TABLE OF ty_bsid,
+      gt_bkpf   TYPE TABLE OF ty_bkpf.
+
+DATA: gs_acdoca TYPE  ty_acdoca,
+      gs_bsid   TYPE  ty_bsid,
+      gs_bkpf   TYPE  ty_bkpf.
+
+*********** Declaração da estrutura tipo da estrutura criada ***************
+DATA: gt_agrupfinal TYPE TABLE OF ZST_FSW_AGROUP_FINAL_RMO,
+      gs_agrupfinal TYPE ZST_FSW_AGROUP_FINAL_RMO.
+
+*---------------------------------------------------------------------
+***************DECLARAÇÃO DE TABELAS ALV*****************************
+*---------------------------------------------------------------------
+DATA: "ariáveis utilizadas no ALV
+  gs_fieldcat TYPE lvc_s_fcat,
+  gs_sort     TYPE lvc_s_sort,
+  gs_layout   TYPE lvc_s_layo,
+  gs_print    TYPE lvc_s_prnt,
+  gt_fieldcat  TYPE lvc_t_fcat.
+
+
+********* Declarações da show alv e criação dos metodos de selecionar linhas **********8
+DATA: ls_first_display  TYPE char1.
+DATA: go_container  TYPE REF TO cl_gui_custom_container,
+      go_alv        TYPE REF TO cl_gui_alv_grid.
+
+DATA: lt_selected_rows TYPE lvc_t_row,
+      gs_selected TYPE lvc_s_row.
