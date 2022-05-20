@@ -1,0 +1,200 @@
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Include          ZR_FSW_AGRUP_FAT_F01
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+FORM zf_buscar_dados.
+  PERFORM zf_selecionar_dados .
+ENDFORM.
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Form zf_selecionar_dados
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Form para selecionar os dados e processar dados
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& ~~>  p1        text
+*& <~~  p2        text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+FORM zf_selecionar_dados .
+
+  SELECT
+    acdoca~rclnt,  acdoca~rldnr,  acdoca~rbukrs,  acdoca~gjahr,  acdoca~belnr,
+    acdoca~docln,  acdoca~ryear,  acdoca~docnr_ld, acdoca~rrcty, acdoca~rmvct,
+    acdoca~vorgn,  acdoca~vrgng,  acdoca~bttype, acdoca~cbttype, acdoca~awtyp,
+    acdoca~awitem, acdoca~awitgrp, acdoca~subta, acdoca~rtcur,  acdoca~rwcur,
+    acdoca~rhcur,  acdoca~rkcur,  acdoca~runit,  acdoca~racct,  acdoca~rcntr,
+    acdoca~prctr,  acdoca~rfarea, acdoca~rbusa,  acdoca~kokrs,  acdoca~segment,
+    acdoca~scntr,  acdoca~pprctr, acdoca~sfarea, acdoca~sbusa,  acdoca~rassc,
+    acdoca~psegment, acdoca~tsl,  acdoca~wsl,    acdoca~budat,  acdoca~bldat,
+    acdoca~blart,  acdoca~buzei,  acdoca~zuonr,  acdoca~bschl,  acdoca~bstat,
+    acdoca~usnam,  acdoca~ktopl,  acdoca~lokkt,  acdoca~ktop2,  acdoca~rebzg,
+    acdoca~ebeln,  acdoca~ebelp,  acdoca~zekkn,  acdoca~sgtxt,  acdoca~kdauf,
+    acdoca~kdpos,  acdoca~matnr,  acdoca~werks,  acdoca~lifnr,  acdoca~kunnr,
+    acdoca~koart,  acdoca~umskz,  acdoca~mwskz,  acdoca~hbkid,  acdoca~hktid,
+    acdoca~valut,  acdoca~xopvw,  acdoca~augdt,  bsid~anfbn,    bkpf~xref2_hd,
+    bsid~zterm
+
+    FROM acdoca AS acdoca
+
+    INNER JOIN bsid AS bsid   ON bsid~bukrs  = acdoca~rbukrs
+                              AND bsid~kunnr = acdoca~kunnr
+                              AND bsid~belnr = acdoca~belnr
+    INNER JOIN bkpf AS bkpf   ON bkpf~bukrs  = acdoca~rbukrs
+                              AND bkpf~belnr = acdoca~belnr
+
+    WHERE acdoca~kunnr IN @s_kunnr
+    AND acdoca~rbukrs  IN @s_rbukrs
+    AND acdoca~blart   IN @s_blart
+    AND acdoca~budat   IN @s_budat
+    AND bsid~anfbn     IN @s_anfbn
+    AND acdoca~netdt   IN @s_netdt
+    AND bkpf~xref2_hd  IN @s_xref2
+    AND bsid~zterm     IN @s_zterm
+    AND acdoca~rldnr = '0L'
+    AND acdoca~xreversed = ' '
+    AND acdoca~augbl = ' '
+    INTO TABLE @DATA(gt_final).
+
+  MOVE-CORRESPONDING gt_final TO gt_agrupfinal.
+  IF sy-subrc IS INITIAL.
+
+  ENDIF.
+
+ENDFORM.
+
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& form zf_layout
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& ~~>  p1        text
+*& <~~  p2        text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+FORM zf_layout .
+
+  gs_layout-grid_title = 'Agrupamento de Faturas '."titulo do relatório
+  gs_layout-zebra      = 'x'.         "linhas do relatório zebradas
+  gs_layout-cwidth_opt = 'x'.         "otimização das colunas do relatório
+  gs_layout-sel_mode   = 'A'.         "Coluna para selecionar linhas
+
+ENDFORM.
+
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Form zf_fieldcat
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& ~~>  p1        text
+*& <~~  p2        text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+FORM zf_fieldcat .
+
+  DATA: lt_fieldcat TYPE slis_t_fieldcat_alv.
+  DATA: ls_fieldcat TYPE slis_fieldcat_alv.
+
+  CALL FUNCTION 'REUSE_ALV_FIELDCATALOG_MERGE'
+    EXPORTING
+      i_internal_tabname     = 'gt_agrupfinal'
+      i_structure_name       = 'ZST_FSW_AGROUP_FINAL_RMO'
+    CHANGING
+      ct_fieldcat            = lt_fieldcat
+    EXCEPTIONS
+      inconsistent_interface = 1
+      program_error          = 2
+      OTHERS                 = 3.
+  IF sy-subrc = 0.
+
+******* Montar a extrutura do ALV
+    LOOP AT lt_fieldcat INTO ls_fieldcat.
+
+      gs_fieldcat-fieldname = ls_fieldcat-fieldname.
+      gs_fieldcat-tabname   = ls_fieldcat-tabname.
+      gs_fieldcat-scrtext_l = ls_fieldcat-seltext_l.
+      gs_fieldcat-scrtext_m = ls_fieldcat-seltext_m.
+      gs_fieldcat-scrtext_s = ls_fieldcat-seltext_s.
+
+      IF gs_fieldcat-fieldname = 'RBUKRS' OR gs_fieldcat-fieldname = 'KUNNR' OR gs_fieldcat-fieldname = 'BELNR' OR gs_fieldcat-fieldname = 'SGTXT'
+      OR gs_fieldcat-fieldname = 'RWCUR' OR gs_fieldcat-fieldname = 'WSL' OR gs_fieldcat-fieldname = 'RHCUR' OR gs_fieldcat-fieldname = 'HSL'
+      OR gs_fieldcat-fieldname = 'BUDAT' OR gs_fieldcat-fieldname = 'NETDT' OR gs_fieldcat-fieldname = 'ZTERM' OR gs_fieldcat-fieldname = 'ANFBN'.
+
+        gs_fieldcat-no_out = ''.
+      ELSE.
+        gs_fieldcat-no_out = 'X'.
+
+      ENDIF.
+      APPEND gs_fieldcat TO gt_fieldcat.
+      APPEND gs_agrupfinal TO gt_agrupfinal.
+      CLEAR gs_fieldcat.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.
+
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Form zf_sort
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& ~~>  p1        text
+*& <~~  p2        text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+FORM zf_show_alv .
+
+  IF ls_first_display IS INITIAL.
+
+    CREATE OBJECT go_container
+      EXPORTING
+        container_name = 'CONTAINER'.
+
+    CREATE OBJECT go_alv
+      EXPORTING
+        i_parent = go_container.
+
+    CALL METHOD go_alv->set_table_for_first_display
+      EXPORTING
+        is_layout                     = gs_layout
+      CHANGING
+        it_outtab                     = gt_agrupfinal
+        it_fieldcatalog               = gt_fieldcat
+      EXCEPTIONS
+        invalid_parameter_combination = 1
+        program_error                 = 2
+        too_many_lines                = 3
+        OTHERS                        = 4.
+    ls_first_display = abap_true.
+  ELSE.
+    CALL METHOD go_alv->refresh_table_display.
+  ENDIF.
+
+ENDFORM.
+
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Form zf_selected_button
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& Form  criação do method para as linhas selecionadas da ALV
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+*& ~~>  p1        text
+*& <~~  p2        text
+*&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+FORM zf_selected_button.
+
+  DATA: lv_soma TYPE fins_vwcur12,
+        lv_temp TYPE fins_vwcur12.
+
+  CALL METHOD go_alv->get_selected_rows
+    IMPORTING
+      et_index_rows = lt_selected_rows.
+
+  LOOP AT lt_selected_rows INTO gs_selected.
+    READ TABLE gt_agrupfinal
+      INDEX  gs_selected-index INTO gs_agrupfinal.
+
+    lv_soma = lv_soma + gs_agrupfinal-wsl.
+
+  ENDLOOP.
+  CLEAR gs_selected.
+  IF  lt_selected_rows IS INITIAL.
+    MESSAGE: 'Nenhuma linha selecionada'  TYPE 'S' DISPLAY LIKE 'A'.
+
+  ELSEIF lt_selected_rows IS NOT INITIAL.
+    MESSAGE: | Documentos selecionados da empresa:  { gs_agrupfinal-rbukrs } | & | Data do Documento: { gs_agrupfinal-bldat } | & | A soma dos documentos selecionados é:  { lv_soma }|  TYPE 'I' DISPLAY LIKE 'S'.
+
+  ENDIF.
+
+ENDFORM.
