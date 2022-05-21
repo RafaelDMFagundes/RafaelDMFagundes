@@ -1,0 +1,21 @@
+A demanda desse projeto foi me apresentada com uma documentação com a seguinte taréfa: Agrupamento de Faturas 
+
+Foi criado o programa principal com os INCLUDES...
+TOP(Declarações das variáveis)
+SCR(Tela de Seleção com: "select-options")
+
+Evento (Start-of-selection) para a chamada do PERFORM: "zf_buscar_dados".
+
+Com uma condição "IF" condicionando se a declaração criada for "IS NOT INITIAL".
+O mesmo chamara a "CALL SCREEN" (Container criado para a geração da ALV).
+Se a condição for "IS INITIAL", uma mensagem de dadaod não encontrado será mostrado em um pop up.
+
+Com isso foi criado também os INCLUDES...
+F01(Esse include levara todas linhas do código, como: Todos os forms, seleção dos dados, processamento dos dados, todos códigos da criação e, geração da ALV).
+PBO ("PROCESS BEFORE OUTPUT", ou seja, colocamos dentro de include os perfoms da ALV, e também, criamos o status gui,(A parte dos botões da ALV)).
+PAI ("PROCESS AFTER INPUT" Nesse meu projeto eu criei um: "CASE sy-ucomm", e os "WHEN" com os nomes dos botões criado no status gui para, SAVE, BACK, CANCEL, EXIT...
+Também fiz a condição do botão agrupamento, ja criado no status gui, caso o usuario selecionar as linhas desejadas na ALV e clicar no botão Agrupamento... 
+o mesmo irá agrupar as linhas selecionadas e, criar um novo documento).
+
+Como ja citado a cima, criei uma tela '0100' com o nome de: "CONTAINER".
+
